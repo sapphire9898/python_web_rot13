@@ -16,8 +16,10 @@ import webapp2
 
 form="""
 <form method="POST">
-	Enter the string to rot13:
-	<input type="text" name="q" value="%(q)s"> 
+	<b>Enter the string to rot13:<b>
+	<br>
+	<textarea name="text" rows="4" cols="50">%(q)s</textarea>
+	<br>
 	<input type="submit">
 </form>
 """
@@ -27,26 +29,26 @@ class MainPage(webapp2.RequestHandler):
 	#change the string + 13; 
 		res=""
 		for c in s:
-			if  (c >= 'a' and c <= 'n') or (c >= 'A' and c <= 'N'):
+			if  (c >= 'a' and c < 'n') or (c >= 'A' and c < 'N'):
 				res += chr(ord(c) + 13)		
-			elif (c > 'n' and c <= 'z') or (c > 'N' and c <= 'Z'):
+			elif (c >= 'n' and c <= 'z') or (c >= 'N' and c <= 'Z'):
 				res += chr(ord(c) - 13)
 			else:
 				res += c
 		return res
 
-	def validQ(self, q):
+	def validQ(self, text):
 		dict={'>': "&gt;", '<' : "$lt;", '"' : "&quot;", '&': "&amp;"}
 		for ele in dict.keys():
-			q = q.replace(ele, dict[ele])
-		return q
+			text = text.replace(ele, dict[ele])
+		return text
 		
-	def write_form(self, q=""):
-		self.response.out.write(form % {"q" : q})
+	def write_form(self, text=""):
+		self.response.out.write(form % {"q" : text})
 	def get(self):
 		self.write_form()
 	def post(self):
-		user_q= self.rot13(self.request.get("q"))
+		user_q= self.rot13(self.request.get("text"))
 		valid_q = self.validQ(user_q)
 		self.write_form(user_q)
 
